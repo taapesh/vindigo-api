@@ -25,8 +25,8 @@ def devices_api(request):
     """ Vindigo Device API """
     return Response({
         "Create a dummy device": "http://127.0.0.1:8000/devices/create_dummy_device/",
-        "List all devices": "http://127.0.0.1:8000/",
-        "Get a device": "http://127.0.0.1:8000/",
+        "List all devices": "http://127.0.0.1:8000/devices/",
+        "Get a device": "http://127.0.0.1:8000/devices/",
         "List device trips": "http://127.0.0.1:8000/",
         "Latest vehicle": "http://127.0.0.1:8000/"
     })
@@ -57,7 +57,7 @@ def create_dummy_device(request):
     # For now, use the simple unique id of the device
     # In production, we would generate a strong unique id for each device
     device.device_id = str(device.id)
-    
+
     if device_name is not None:
         device.device_name = device_name
     
@@ -67,4 +67,11 @@ def create_dummy_device(request):
 
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-
+@api_view(["GET"])
+def get_device(request, device_id):
+    try:
+        device = Device.objects.get(device_id=device_id)
+        serializer = DeviceSerializer(device)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Device.DoesNotExist:
+        return Response({"error": "Invalid device id"}, status=status.HTTP_404_NOT_FOUND)
