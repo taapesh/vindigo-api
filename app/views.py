@@ -22,10 +22,6 @@ def vindigo_api(request):
 
 @api_view(["POST"])
 def create_dummy_device(request):
-    """ Create a device for testing purposes """
-
-    device_name = request.data.get("device_name")
-
     device = Device()
     device.save()
 
@@ -33,13 +29,12 @@ def create_dummy_device(request):
     # In production, we would generate a strong unique id for each device
     device.device_id = str(device.id)
 
+    device_name = request.data.get("device_name")
     if device_name is not None:
         device.device_name = device_name
     
     device.save()
-
     serializer = DeviceSerializer(device)
-
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @api_view(["GET"])
@@ -49,7 +44,7 @@ def get_device(request, device_id):
         serializer = DeviceSerializer(device)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Device.DoesNotExist:
-        return Response({"error": "Invalid device id"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": "Device does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(["GET"])
 def latest_vehicle(request, device_id):
@@ -61,19 +56,45 @@ def latest_vehicle(request, device_id):
             serializer = VehicleSerializer(vehicle)
             return Response(serializer.data, status=HTTP_200_OK)
         else:
-            return Response({"message": "No vehicle associated with this device"}, status=status.HTTP_200_OK)
-
+            return Response({"message": "No vehicle associated with this device"}, status=status.HTTP_200_OK) 
     except Device.DoesNotExist:
-        return Response({"error": "Invalid device id"})
+        return Response({"error": "Device does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(["GET"])
 def get_device_trips(request, device_id):
     try:
         device = Device.objects.get(device_id=device_id)
-
         trips = Trip.objects.filter(device_id=device_id)
         serializer = TripSerializer(trips, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
     except Device.DoesNotExist:
-        return Response({"error": "Invalid device id"})
+        return Response({"error": "Device does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(["GET"])
+def get_trip(request, trip_id):
+    try:
+        trip = Trip.objects.get(trip_id=trip_id)
+        serializer = TripSerializer(trip)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Trip.DoesNotExist:
+        return Response({"error": "Trip does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(["GET"])
+def get_device_vehicles(request, device_id):
+    try:
+        device = Device.objects.get(device_id=device_id)
+        vehicles = Vehicle.objects.filter(device_id=device_id)
+        serializer = VehicleSerializer(vehicles, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Device.DoesNotExist:
+        return Response({"error": "Device does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(["GET"])
+def get_vehicle(request, vehicle_id):
+    try:
+        vehicle = Vehicle.objects.get(vehicle_id=vehicle_id)
+        serializer = VehicleSerializer(vehicle)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Vehicle.DoesNotExist:
+        return Response({"error": "Vehicle does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
