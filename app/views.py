@@ -20,31 +20,6 @@ def vindigo_api(request):
         "Vehicles API": "http://127.0.0.1:8000/vehicles/"
     })
 
-@api_view()
-def devices_api(request):
-    """ Vindigo Device API """
-    return Response({
-        "Create a dummy device": "http://127.0.0.1:8000/devices/create_dummy_device/",
-        "List all devices": "http://127.0.0.1:8000/devices/",
-        "Get a device": "http://127.0.0.1:8000/devices/",
-        "List device trips": "http://127.0.0.1:8000/",
-        "Latest vehicle": "http://127.0.0.1:8000/"
-    })
-
-@api_view()
-def trips_api(request):
-    """ Vindigo Trip API """
-    return Response({
-        "Get a trip": "http://127.0.0.1:8000/"    
-    })
- 
-@api_view()
-def vehicles_api(request):
-    """ Vindigo Vehicle API """
-    return Response({
-        "Get a vehicle": "http://127.0.0.1:8000/"    
-    })
-
 @api_view(["POST"])
 def create_dummy_device(request):
     """ Create a device for testing purposes """
@@ -75,3 +50,18 @@ def get_device(request, device_id):
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Device.DoesNotExist:
         return Response({"error": "Invalid device id"}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(["GET"])
+def latest_vehicle(request, device_id):
+    try:
+        device = Device.objects.get(device_id=device_id)
+        
+        if device.vehicle_id is not None:
+            vehicle = Vehicle.objects.get(vehicle_id=device.vehicle_id)
+            serializer = VehicleSerializer(vehicle)
+            return Response(serializer.data, status=HTTP_200_OK)
+        else:
+            return Response({"message": "No vehicle associated with this device"}, status=status.HTTP_200_OK)
+
+    except Device.DoesNotExist:
+        return Response({"error": "Invalid device id"})

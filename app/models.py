@@ -10,7 +10,7 @@ class Device(models.Model):
     device_id = models.CharField(max_length=255, default="")
     device_name = models.CharField(max_length=40, default="")
     time_created = models.DateTimeField(auto_now_add=True)
-    vehicle_id = models.CharField(max_length=255, default="")
+    vehicle_id = models.CharField(max_length=255, blank=True, null=True)
     time_driven = models.BigIntegerField(default=0)
     distance_driven = models.DecimalField(max_digits=11, decimal_places=2, default=0.00)
     location_address = models.CharField(max_length=255, default="")
