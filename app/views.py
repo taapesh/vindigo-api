@@ -65,3 +65,15 @@ def latest_vehicle(request, device_id):
 
     except Device.DoesNotExist:
         return Response({"error": "Invalid device id"})
+
+@api_view(["GET"])
+def get_device_trips(request, device_id):
+    try:
+        device = Device.objects.get(device_id=device_id)
+
+        trips = Trip.objects.filter(device_id=device_id)
+        serializer = TripSerializer(trips, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    except Device.DoesNotExist:
+        return Response({"error": "Invalid device id"})
