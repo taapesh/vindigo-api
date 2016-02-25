@@ -6,16 +6,17 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = VindigoUser
-        fields = {
+        fields = (
             "email",
-        }
+        )
 
 class DeviceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Device
-        fields = {
+        fields = (
             "device_id",
+            "device_name",
             "time_created",
             "vehicle_id",
             "time_driven",
@@ -23,13 +24,13 @@ class DeviceSerializer(serializers.ModelSerializer):
             "location_address",
             "location_lat",
             "location_lng",
-        }
+        )
 
 class TripSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Trip
-        fields = {
+        fields = (
             "trip_id",
             "status",
             "time_start",
@@ -51,17 +52,17 @@ class TripSerializer(serializers.ModelSerializer):
             "start_lng",
             "stop_lat",
             "stop_lng",
-        }
+        )
 
 class VehicleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Vehicle
-        fields = {
+        fields = (
             "vehicle_id",
             "device_id",
             "year",
             "make",
             "model",
             "trim",
-        }
+        )
