@@ -1,13 +1,15 @@
 from __future__ import unicode_literals
 
+import uuid
 from django.db import models
+from uuidfield import UUIDField
 
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
 )
 
 class Device(models.Model):
-    device_id = models.CharField(max_length=255, default="")
+    device_id = UUIDField(auto=True)
     device_name = models.CharField(max_length=40, default="")
     time_created = models.DateTimeField(auto_now_add=True)
     vehicle_id = models.CharField(max_length=255, blank=True, null=True)
@@ -18,7 +20,7 @@ class Device(models.Model):
     location_lng = models.FloatField(blank=True, null=True)
 
 class Trip(models.Model):
-    trip_id = models.CharField(max_length=255, default="")
+    trip_id = UUIDField(auto=True)
     status = models.CharField(max_length=20, default="in_progress")
     time_start = models.DateTimeField(auto_now_add=True)
     time_end = models.DateTimeField(blank=True, null=True)
@@ -41,7 +43,7 @@ class Trip(models.Model):
     stop_lng = models.FloatField(blank=True, null=True)
 
 class Vehicle(models.Model):
-    vehicle_id = models.CharField(max_length=255, default="")
+    vehicle_id = UUIDField(auto=True)
     device_id = models.CharField(max_length=255, default="")
     year = models.IntegerField(default=-1)
     make = models.CharField(max_length=50, default="")

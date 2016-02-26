@@ -6,6 +6,8 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework import permissions
 from rest_framework.authentication import TokenAuthentication
 
+from datetime import datetime, timedelta
+
 from django.shortcuts import render
 
 from app.models import VindigoUser, Device, Trip, Vehicle
@@ -22,20 +24,12 @@ def vindigo_api(request):
 
 @api_view(["POST"])
 def create_dummy_device(request):
-    device = Device()
-    device.save()
-
-    # For now, use the simple unique id of the device
-    # In production, we would generate a strong unique id for each device
-    device.device_id = str(device.id)
-
-    device_name = request.data.get("device_name")
-    if device_name is not None:
-        device.device_name = device_name
-    
-    device.save()
-    serializer = DeviceSerializer(device)
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
+    serializer = DeviceSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(DeviceSerializer(device), status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(["GET"])
 def get_device(request, device_id):
@@ -79,6 +73,15 @@ def get_trip(request, trip_id):
     except Trip.DoesNotExist:
         return Response({"error": "Trip does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
+@api_view(["POST"])
+def create_trip(request):
+    serializer = TripSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
+
 @api_view(["GET"])
 def get_device_vehicles(request, device_id):
     try:
@@ -95,6 +98,24 @@ def get_vehicle(request, vehicle_id):
         vehicle = Vehicle.objects.get(vehicle_id=vehicle_id)
         serializer = VehicleSerializer(vehicle)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    except Vehicle.DoesNotExist:
+        return Response({"error": "Vehicle does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(["POST"])
+def register_vehicle(request):
+    serializer = VehicleSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(VehicleSerializer(vehicle).data, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["DELETE"])
+def delete_vehicle(request, vehicle_id):
+    try:
+        vehicle = Vehicle.objects.get(vehicle_id=vehicle_id)
+        vehicle.delete()
+        return Response({"message": "Vehicle deleted"}, status=status.HTTP_200_OK)
     except Vehicle.DoesNotExist:
         return Response({"error": "Vehicle does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
