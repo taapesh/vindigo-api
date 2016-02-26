@@ -27,9 +27,15 @@ def create_dummy_device(request):
     serializer = DeviceSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
-        return Response(DeviceSerializer(device), status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     else:
         return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["GET"])
+def get_all_devices(request):
+    devices = Device.objects.all()
+    serializer = DeviceSerializer(devices, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(["GET"])
 def get_device(request, device_id):
