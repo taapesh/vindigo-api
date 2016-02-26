@@ -13,7 +13,7 @@ SECRET_KEY = 'd&z+tw+xj(p5!(=q)($afg!t*1=6h&dh$#qt&*wvyupm(r8453'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
