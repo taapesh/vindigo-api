@@ -140,5 +140,7 @@ def log_trip(request):
             device.location_lng = request.data.get("end_lng")
             device.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
     except Device.DoesNotExist:
         return Response({"error": "Device does not exist"})
