@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^devices/(?P<device_id>\w+)', views.get_device),
 
     # Trip API
+    url(r'^trips/log_trip', views.log_trip),
     url(r'^trips/(?P<trip_id>\w+)', views.get_trip),
 
     # Vehicle API

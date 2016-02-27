@@ -125,3 +125,19 @@ def delete_vehicle(request, vehicle_id):
     except Vehicle.DoesNotExist:
         return Response({"error": "Vehicle does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
+@api_view(["POST"])
+def log_trip(request):
+    try:
+        device = Device.objects.get(device_id=request.data.get("device_id"))
+        serializer = TripSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            # Edit device stats
+            device.distance_driven += request.data.get("distance")
+            device.time_driven += request.data.get("duration")
+            device.location_lat = request.data.get("end_lat")
+            device.location_lng = request.data.get("end_lng")
+            device.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    except Device.DoesNotExist:
+        return Response({"error": "Device does not exist"})
