@@ -7,6 +7,7 @@ from rest_framework import permissions
 from rest_framework.authentication import TokenAuthentication
 
 from datetime import datetime, timedelta
+from decimal import Decimal
 
 from django.shortcuts import render
 
@@ -133,8 +134,8 @@ def log_trip(request):
         if serializer.is_valid():
             serializer.save()
             # Edit device stats
-            device.distance_driven += request.data.get("distance")
-            device.time_driven += request.data.get("duration")
+            device.distance_driven += Decimal(request.data.get("distance"))
+            device.time_driven += Decimal(request.data.get("duration"))
             device.location_lat = request.data.get("end_lat")
             device.location_lng = request.data.get("end_lng")
             device.save()
