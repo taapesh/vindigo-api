@@ -47,6 +47,19 @@ def get_device(request, device_id):
     except Device.DoesNotExist:
         return Response({"error": "Device does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
+@api_view(["POST"])
+def reset_device(request):
+    try:
+        device = Device.objects.get(device_id=request.data.get("device_id"))
+        device.distance_driven = Decimal("0.00")
+        device.time_driven = Decimal("0")
+        device.location_lat = None
+        device.location_lng = None
+        device.save()
+        return Response({"message": "Device reset successfully"}, status=status.HTTP_200_OK)
+    except Device.DoesNotExist:
+        return Response({"error": "Device does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
 @api_view(["GET"])
 def latest_vehicle(request, device_id):
     try:
